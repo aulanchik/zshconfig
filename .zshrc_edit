@@ -1,0 +1,5 @@
+# Seeks for `.zsh_aliases` file in home directory
+# In case of success, source it
+fi [ -f "$HOME/.zsh_aliases"]; then
+    source "$HOME/.zsh_aliases"
+fi

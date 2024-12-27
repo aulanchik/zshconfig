@@ -26,6 +26,16 @@ alias gd='git diff'
 alias gl='git log'
 alias gle="git log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%an%C(reset)%C(bold yellow)%d%C(reset) %C(dim white)- %s%C(reset)' --all"
 
+# PNPM (just in case if you have sense of preserving SSDs...)
+# The following aliases will attempt to 'cure' willingness to execute 'npm ...' by running 'pnpm ...' on your behalf.
+
+alias npm='pnpm'
+alias npx='pnpx'
+alias npm-install='pnpm install'
+alias npm-run='pnpm run'
+alias npm-start='pnpm start'
+alias npm-test='pnpm test'
+
 # VSCode Profile aliases (requires profile name)
 # Requires profiles setup in vscode first
 # Example: Assuming you have created Python profile called 'python' and you wish to open your current directory using that specific profile.

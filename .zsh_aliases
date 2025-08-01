@@ -41,3 +41,4 @@ alias npm-test='pnpm test'
 # Example: Assuming you have created Python profile called 'python' and you wish to open your current directory using that specific profile.
 
 alias pycode='code . --profile python'
+alias spring='code . --profile "Java Spring"'

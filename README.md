@@ -4,36 +4,19 @@ This repository provides a minimalistic set of developer configuration aliases t
 
 ## Setup
 
-Follow these steps to set up the configuration.
+To set up the zsh aliases, run the setup script from the repository directory:
 
-1.  **Navigate to your home directory.**
-    Open your terminal and run `pwd`. It should output `/Users/<username>`. If not, run `cd ~` to go to your home directory.
+```sh
+./setup.sh
+```
 
-2.  **Copy the alias file.**
-    Copy the `.zsh_aliases` file from this repository to your home directory.
-    ```sh
-    cp .zsh_aliases ~/.zsh_aliases
-    ```
+This script will automatically copy the alias file to your home directory, update your `.zshrc`, and apply the changes.
 
-3.  **Update your `.zshrc`.**
-    Append the sourcing logic from `.zshrc_edit` to your existing `~/.zshrc` file. This ensures that your aliases are loaded every time you open a new terminal session.
-    ```sh
-    cat .zshrc_edit >> ~/.zshrc
-    ```
-    This adds the following lines to your `.zshrc`:
-    ```sh
-    # Seeks for `.zsh_aliases` file in home directory
-    # In case of success, source it
-    if [ -f "$HOME/.zsh_aliases" ]; then
-        source "$HOME/.zsh_aliases"
-    fi
-    ```
+If you encounter any issues or prefer manual setup, you can follow these steps:
 
-4.  **Apply the changes.**
-    Reload your shell configuration to make the new aliases available immediately.
-    ```sh
-    source ~/.zshrc
-    ```
+1. Copy `.zsh_aliases` to your home directory: `cp .zsh_aliases ~/.zsh_aliases`
+2. Append the contents of `.zshrc_edit` to your `~/.zshrc`: `cat .zshrc_edit >> ~/.zshrc`
+3. Reload your shell: `source ~/.zshrc`
 
 ## Usage
 Once the setup is complete, you can start using the shorthand aliases in your terminal. For example, instead of typing `cd ..`, you can simply use `.`.

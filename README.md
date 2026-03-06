@@ -1,89 +1,365 @@
-# Personal zsh aliases configuration file
+# Personal ZSH Aliases Configuration
 
-This repository provides a minimalistic set of developer configuration aliases to enhance productivity with the `zsh` terminal on macOS. The primary goal is to keep your main `~/.zshrc` file clean by sourcing aliases from a dedicated `~/.zsh_aliases` file.
+This repository provides a minimal and modular configuration for managing **ZSH aliases** on macOS.
 
-## Setup
+Instead of cluttering your `~/.zshrc` with many aliases, this setup keeps them in a dedicated file:
 
-To set up the zsh aliases, run the setup script from the repository directory:
+```
 
-```sh
+~/.zsh_aliases
+
+```
+
+The provided `setup.sh` script installs aliases automatically and allows you to enable only the alias groups (profiles) you need.
+
+---
+
+# Features
+
+- Modular **alias profiles**
+- Simple CLI installer
+- Automatic `.zshrc` integration
+- Safe backups before changes
+- Profile selection (`--profiles`)
+- Dry-run preview (`--dry-run`)
+- Profile discovery (`--list-profiles`)
+- Profile removal (`--remove`)
+- Colored CLI output
+- Optional uninstall script
+
+---
+
+# Repository Structure
+
+```
+
+.
+├── setup.sh
+├── uninstall.sh
+├── .zsh_aliases
+├── .zshrc_edit
+└── README.md
+
+````
+
+### File overview
+
+| File | Purpose |
+|-----|------|
+| `setup.sh` | Installs and configures aliases |
+| `uninstall.sh` | Removes aliases and restores configuration |
+| `.zsh_aliases` | Template containing all alias profiles |
+| `.zshrc_edit` | Lines appended to `.zshrc` to load aliases |
+
+---
+
+# Installation
+
+Clone the repository:
+
+```bash
+git clone <repo-url>
+cd zsh-aliases
+````
+
+Run the setup script:
+
+```bash
 ./setup.sh
 ```
 
-This script will automatically copy the alias file to your home directory, update your `.zshrc`, and apply the changes.
+Then reload your shell:
 
-If you encounter any issues or prefer manual setup, you can follow these steps:
+```bash
+source ~/.zshrc
+```
 
-1. Copy `.zsh_aliases` to your home directory: `cp .zsh_aliases ~/.zsh_aliases`
-2. Append the contents of `.zshrc_edit` to your `~/.zshrc`: `cat .zshrc_edit >> ~/.zshrc`
-3. Reload your shell: `source ~/.zshrc`
+---
 
-## Usage
-Once the setup is complete, you can start using the shorthand aliases in your terminal. For example, instead of typing `cd ..`, you can simply use `.`.
+# Setup Options
 
-You can customize the `.zsh_aliases` file at any time to add, remove, or modify aliases. Just remember to reload your shell with `source ~/.zshrc` after making changes.
+## Default Setup
 
-## Available Aliases
+Installs only the **general** aliases.
 
-Here is a list of aliases included in the `.zsh_aliases` file.
+```bash
+./setup.sh
+```
 
-### General
-| Alias | Command | Description |
-| :--- | :--- | :--- |
-| `.` | `cd ..` | Go up one directory. |
-| `..` | `cd ../../` | Go up two directories. |
-| `awake` | `caffeinate -d` | Prevent the Mac from sleeping. |
+---
 
-### Homebrew
-| Alias | Command | Description |
-| :--- | :--- | :--- |
-| `bi` | `brew install` | Install a formula. |
-| `bic` | `brew install --cask` | Install a cask. |
-| `bup` | `brew update` | Update Homebrew. |
-| `bupg` | `brew upgrade` | Upgrade all outdated packages. |
-| `blist` | `brew list` | List all installed packages. |
-| `bfull`| `brew update && brew upgrade && brew cleanup --prune=all` | Perform a full update, upgrade, and cleanup. |
+## Install Specific Profiles
 
-### Git
-| Alias | Command | Description |
-| :--- | :--- | :--- |
-| `ga` | `git add --all` | Stage all changes. |
-| `gb` | `git branch` | List all branches. |
-| `gc` | `git clone` | Clone a repository. |
-| `gcm` | `git commit -m` | Commit with a message. |
-| `gco` | `git checkout` | Switch branches. |
-| `gf` | `git fetch` | Fetch changes from the remote. |
-| `gp` | `git pull` | Pull changes from the remote. |
-| `gd` | `git diff` | Show changes. |
-| `gl` | `git log` | View commit history. |
-| `gle` | `git log --graph ...` | Display a formatted and decorated git log tree. |
+You can install only the profiles you need.
 
-### PNPM
-These aliases forward `npm` commands to `pnpm` to help preserve disk space.
-| Alias | Command | Description |
-| :--- | :--- | :--- |
-| `npm` | `pnpm` | Use `pnpm` instead of `npm`. |
-| `npx`| `pnpx`| Use `pnpx` instead of `npx`. |
-| `npm-install` | `pnpm install` | Install dependencies using `pnpm`. |
-| `npm-run` | `pnpm run` | Run a script using `pnpm`. |
-| `npm-start` | `pnpm start` | Run the start script using `pnpm`. |
-| `npm-test` | `pnpm test` | Run tests using `pnpm`. |
+```bash
+./setup.sh --profiles=git,brew
+```
 
-### VSCode Profiles
-This requires you to have named profiles set up in VSCode first.
-| Alias | Command | Description |
-| :--- | :--- | :--- |
-| `pycode` | `code . --profile python` | Open the current directory in VSCode using the 'python' profile. |
+Short form:
 
-## Troubleshooting
+```bash
+./setup.sh -p=pnpm,vscprofiles
+```
 
--   **Changes not applied:** If your aliases aren't working, ensure you have correctly added the sourcing line to your `~/.zshrc` file and have reloaded your shell with `source ~/.zshrc`.
--   **File location:** Confirm that the `.zsh_aliases` file is located in your home directory (`~`). You can verify this by running `ls -a ~` and checking for the file in the output list.
+The `general` profile is **always installed automatically**.
 
-## Contributing
+---
 
-Feel free to submit issues or pull requests for additional aliases, fixes, or improvements.
+## Install All Profiles
 
-## License
+```bash
+./setup.sh --profiles=ALL
+```
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+---
+
+## List Available Profiles
+
+```bash
+./setup.sh --list-profiles
+```
+
+Example output:
+
+```
+general
+brew
+git
+pnpm
+vscprofiles
+```
+
+---
+
+## Preview Changes (Dry Run)
+
+Show what would be generated without modifying files.
+
+```bash
+./setup.sh --dry-run --profiles=git
+```
+
+---
+
+## Remove Profiles
+
+You can remove profiles from the current configuration.
+
+```bash
+./setup.sh --remove=git
+```
+
+---
+
+# Manual Setup
+
+If you prefer not to run the script, you can configure aliases manually.
+
+### 1. Copy aliases file
+
+```bash
+cp .zsh_aliases ~/.zsh_aliases
+```
+
+### 2. Append loader to `.zshrc`
+
+```bash
+cat .zshrc_edit >> ~/.zshrc
+```
+
+### 3. Reload shell
+
+```bash
+source ~/.zshrc
+```
+
+You may optionally edit `.zsh_aliases` before copying it.
+
+---
+
+# Usage
+
+Once installed, aliases are available in your terminal.
+
+Example:
+
+Instead of typing:
+
+```bash
+cd ..
+```
+
+You can simply use:
+
+```bash
+.
+```
+
+Aliases can be modified anytime by editing:
+
+```
+~/.zsh_aliases
+```
+
+Then reload:
+
+```bash
+source ~/.zshrc
+```
+
+---
+
+# Available Profiles
+
+Aliases are grouped into profiles inside `.zsh_aliases`.
+
+---
+
+## `general` (Default)
+
+| Alias   | Command         | Description                 |
+| ------- | --------------- | --------------------------- |
+| `.`     | `cd ..`         | Move up one directory       |
+| `..`    | `cd ../../`     | Move up two directories     |
+| `awake` | `caffeinate -d` | Prevent macOS from sleeping |
+
+---
+
+## `brew`
+
+| Alias   | Command                                                   | Description               |
+| ------- | --------------------------------------------------------- | ------------------------- |
+| `bi`    | `brew install`                                            | Install a package         |
+| `bic`   | `brew install --cask`                                     | Install a cask            |
+| `bup`   | `brew update`                                             | Update Homebrew           |
+| `bupg`  | `brew upgrade`                                            | Upgrade packages          |
+| `blist` | `brew list`                                               | List installed packages   |
+| `bfull` | `brew update && brew upgrade && brew cleanup --prune=all` | Full Homebrew maintenance |
+
+---
+
+## `git`
+
+| Alias | Command               | Description          |
+| ----- | --------------------- | -------------------- |
+| `ga`  | `git add --all`       | Stage all changes    |
+| `gb`  | `git branch`          | List branches        |
+| `gc`  | `git clone`           | Clone repository     |
+| `gcm` | `git commit -m`       | Commit with message  |
+| `gco` | `git checkout`        | Switch branch        |
+| `gf`  | `git fetch`           | Fetch remote changes |
+| `gp`  | `git pull`            | Pull remote changes  |
+| `gd`  | `git diff`            | Show differences     |
+| `gl`  | `git log`             | Commit history       |
+| `gle` | `git log --graph ...` | Pretty git tree log  |
+
+---
+
+## `pnpm`
+
+These aliases redirect `npm` commands to `pnpm` to help reduce disk usage.
+
+| Alias         | Command        | Description          |
+| ------------- | -------------- | -------------------- |
+| `npm`         | `pnpm`         | Replace npm          |
+| `npx`         | `pnpx`         | Replace npx          |
+| `npm-install` | `pnpm install` | Install dependencies |
+| `npm-run`     | `pnpm run`     | Run scripts          |
+| `npm-start`   | `pnpm start`   | Start project        |
+| `npm-test`    | `pnpm test`    | Run tests            |
+
+---
+
+## `vscprofiles`
+
+Requires named profiles configured in **VSCode**.
+
+| Alias    | Command                          | Description                       |
+| -------- | -------------------------------- | --------------------------------- |
+| `pycode` | `code . --profile python`        | Open project using Python profile |
+| `spring` | `code . --profile "Java Spring"` | Open project using Spring profile |
+
+---
+
+# Uninstall
+
+To completely remove the aliases configuration:
+
+```bash
+./uninstall.sh
+```
+
+This will:
+
+* remove `~/.zsh_aliases`
+* remove sourcing lines from `.zshrc`
+* keep backups of modified files
+
+Force uninstall:
+
+```bash
+./uninstall.sh --force
+```
+
+---
+
+# Troubleshooting
+
+### Aliases not working
+
+Reload your shell:
+
+```bash
+source ~/.zshrc
+```
+
+Or restart the terminal.
+
+---
+
+### Check alias file location
+
+Ensure the file exists:
+
+```bash
+ls -a ~ | grep zsh_aliases
+```
+
+---
+
+### Restore backup
+
+If something goes wrong, restore backups created during setup:
+
+```
+~/.zsh_aliases.backup.*
+~/.zshrc.backup.*
+```
+
+---
+
+# Contributing
+
+Contributions are welcome.
+
+You can:
+
+* add useful aliases
+* create new profiles
+* improve scripts
+* fix bugs
+
+When adding profiles, follow the format:
+
+```
+# --- profile-name ---
+```
+
+so the installer can detect it correctly.
+
+---
+
+# License
+
+MIT License

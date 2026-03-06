@@ -1,11 +1,9 @@
-# General aliases
-
+# --- general ---
 alias .='cd ..'
 alias ..='cd ../../'
 alias awake='caffeinate -d'
 
-# Homebrew aliases
-
+# --- brew ---
 alias bi='brew install'
 alias bic='brew install --cask'
 alias bup='brew update'
@@ -13,8 +11,7 @@ alias bupg='brew upgrade'
 alias blist='brew list'
 alias bfull="brew update && brew upgrade && brew cleanup --prune=all"
 
-# Git aliases
-
+# --- git ---
 alias ga='git add --all'
 alias gb='git branch'
 alias gc='git clone'
@@ -24,11 +21,10 @@ alias gf='git fetch'
 alias gp='git pull'
 alias gd='git diff'
 alias gl='git log'
+
 alias gle="git log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%an%C(reset)%C(bold yellow)%d%C(reset) %C(dim white)- %s%C(reset)' --all"
 
-# PNPM (just in case if you have sense of preserving SSDs...)
-# The following aliases will attempt to 'cure' willingness to execute 'npm ...' by running 'pnpm ...' on your behalf.
-
+# --- pnpm ---
 alias npm='pnpm'
 alias npx='pnpx'
 alias npm-install='pnpm install'
@@ -36,9 +32,6 @@ alias npm-run='pnpm run'
 alias npm-start='pnpm start'
 alias npm-test='pnpm test'
 
-# VSCode Profile aliases (requires profile name)
-# Requires profiles setup in vscode first
-# Example: Assuming you have created Python profile called 'python' and you wish to open your current directory using that specific profile.
-
+# --- vscprofiles ---
 alias pycode='code . --profile python'
 alias spring='code . --profile "Java Spring"'

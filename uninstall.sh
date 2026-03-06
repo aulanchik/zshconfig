@@ -1,182 +1,125 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Uninstall script for zsh aliases configuration
-# This script removes the aliases setup by setup.sh and cleans up .zshrc
-# Author: Artyom Ulanchik
+set -e
 
-set -e # Exit immediately if a command exits with a non-zero status
-
-ZSHRC_PATH="$HOME/.zshrc"
-ALIAS_DEST="$HOME/.zsh_aliases"
-
-SOURCE_PATTERN='source.*\.zsh_aliases'
-COMMENT_PATTERN='# Added by setup.sh'
-
-log_info() {
-    echo "[INFO] $1"
-}
-
-log_error() {
-    echo "[ERROR] $1" >&2
-}
-
-log_warn() {
-    echo "[WARN] $1" >&2
-}
-
-log_success() {
-    echo "[SUCCESS] $1"
-}
-
-usage() {
-    echo "Usage: $0 [--force]"
-    echo ""
-    echo "Arguments:"
-    echo "  --force, -f    Skip confirmation prompts."
-    echo ""
-    echo "This script will:"
-    echo "  1. Remove the sourcing line from ~/.zshrc"
-    echo "  2. Delete ~/.zsh_aliases"
-    echo "  3. Optionally restore from backup if available"
-    exit 0
-}
-
-# --- Argument Parsing ---
+ZSHRC="$HOME/.zshrc"
+ALIAS_FILE="$HOME/.zsh_aliases"
 
 FORCE=false
 
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+log() { echo -e "${GREEN}[INFO]${NC} $1"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+err() { echo -e "${RED}[ERROR]${NC} $1"; }
+
+usage() {
+echo "Usage:"
+echo "  ./uninstall.sh [--force]"
+echo ""
+echo "Options:"
+echo "  --force, -f     Skip confirmation"
+exit 0
+}
+
 while [[ $# -gt 0 ]]; do
-    case $1 in
-        --force|-f)
-            FORCE=true
-            shift
-            ;;
-        --help|-h)
-            usage
-            ;;
-        *)
-            log_error "Unknown option: $1"
-            usage
-            ;;
-    esac
+case $1 in
+    --force|-f)
+        FORCE=true
+        shift
+        ;;
+    --help|-h)
+        usage
+        ;;
+    *)
+        err "Unknown option: $1"
+        usage
+        ;;
+esac
 done
 
-if [ "$FORCE" = false ]; then
-    echo "WARNING: This will remove zsh aliases configuration from your system."
-    echo ""
-    echo "The following actions will be taken:"
-    echo "  - Remove sourcing lines related to .zsh_aliases from $ZSHRC_PATH"
-    echo "  - Delete $ALIAS_DEST"
-    echo ""
-    read -p "Are you sure you want to continue? (y/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        log_info "Uninstallation cancelled."
-        exit 0
-    fi
+if [[ "$FORCE" == false ]]; then
+echo ""
+echo "This will remove:"
+echo "  ~/.zsh_aliases"
+echo "  sourcing lines from ~/.zshrc"
+echo ""
+
+read -p "Continue? (y/N) " -n 1 -r
+echo
+
+[[ $REPLY =~ ^[Yy]$ ]] || { log "Cancelled."; exit 0; }
 fi
 
-log_info "Starting uninstallation..."
+log "Starting uninstall..."
 
-# --- Step 1: Clean up .zshrc ---
+# --------------------------------------------------
+# Remove alias file
+# --------------------------------------------------
 
-if [ -f "$ZSHRC_PATH" ]; then
-    log_info "Cleaning up $ZSHRC_PATH..."
-    
-    # Create a backup of .zshrc before modifying it
-    RC_CLEANUP_BACKUP="${ZSHRC_PATH}.cleanup_backup.$(date +%Y%m%d_%H%M%S)"
-    cp "$ZSHRC_PATH" "$RC_CLEANUP_BACKUP"
-    log_info "Created backup of current .zshrc: $(basename "$RC_CLEANUP_BACKUP")"
-
-    # Check if any relevant lines exist
-    if grep -qE "$SOURCE_PATTERN|$COMMENT_PATTERN" "$ZSHRC_PATH"; then
-        log_info "Removing sourcing logic..."
-        
-        # Create a temporary file
-        TEMP_RC=$(mktemp)
-        
-        # Use grep -v to invert match (remove lines matching the patterns)
-        # -E enables extended regex
-        # -v inverts the match (selects lines that DO NOT match)
-        grep -vE "$SOURCE_PATTERN|$COMMENT_PATTERN" "$ZSHRC_PATH" > "$TEMP_RC"
-        
-        # Move the cleaned file back
-        mv "$TEMP_RC" "$ZSHRC_PATH"
-        
-        log_info "Removed sourcing logic from .zshrc"
-    else
-        log_warn "No matching sourcing logic found in .zshrc. Skipping removal."
-    fi
+if [[ -f "$ALIAS_FILE" ]]; then
+rm "$ALIAS_FILE"
+log "Removed $ALIAS_FILE"
 else
-    log_warn "$ZSHRC_PATH not found. Skipping .zshrc cleanup."
+warn "$ALIAS_FILE not found"
 fi
 
-# --- Step 2: Remove Alias Files ---
+# --------------------------------------------------
+# Clean .zshrc
+# --------------------------------------------------
 
-files_removed=0
+if [[ -f "$ZSHRC" ]]; then
 
-# Remove main alias file
-if [ -f "$ALIAS_DEST" ]; then
-    rm "$ALIAS_DEST"
-    log_info "Deleted $ALIAS_DEST"
-    ((files_removed++)) || true
+BACKUP="$ZSHRC.backup.$(date +%s)"
+cp "$ZSHRC" "$BACKUP"
+
+log "Backup created: $BACKUP"
+
+TMP=$(mktemp)
+
+grep -vF 'source "$HOME/.zsh_aliases"' "$ZSHRC" \
+| grep -vF '[ -f "$HOME/.zsh_aliases" ] && source "$HOME/.zsh_aliases"' \
+> "$TMP"
+
+mv "$TMP" "$ZSHRC"
+
+log "Removed alias sourcing from .zshrc"
+
 else
-    log_warn "$ALIAS_DEST not found."
+warn ".zshrc not found"
 fi
 
-# Remove any potential profile-specific variants
-for f in "$HOME"/.zsh_aliases_*; do
-    if [ -f "$f" ]; then
-        rm "$f"
-        log_info "Deleted $f"
-        ((files_removed++)) || true
-    fi
-done
+LATEST_BACKUP=$(ls -t "$HOME"/.zsh_aliases.backup.* 2>/dev/null | head -n1)
 
-if [ $files_removed -eq 0 ]; then
-    log_warn "No alias files were found to delete."
+if [[ -n "$LATEST_BACKUP" && "$FORCE" == false ]]; then
+
+echo ""
+log "Found backup: $(basename "$LATEST_BACKUP")"
+
+read -p "Restore it? (y/N) " -n 1 -r
+echo
+
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+cp "$LATEST_BACKUP" "$ALIAS_FILE"
+log "Backup restored"
+fi
+
+fi
+
+if command -v zsh >/dev/null 2>&1 && [[ -f "$ZSHRC" ]]; then
+if zsh -n "$ZSHRC" 2>/dev/null; then
+log ".zshrc syntax OK"
 else
-    log_info "Total alias files removed: $files_removed"
+warn ".zshrc syntax issue detected"
+warn "Restore with:"
+echo "cp $BACKUP $ZSHRC"
 fi
-
-# --- Step 3: Restore from Backup (Optional) ---
-
-LATEST_ALIAS_BACKUP=$(ls -t "$HOME"/.zsh_aliases.backup.* 2>/dev/null | head -n 1)
-
-if [ -n "$LATEST_ALIAS_BACKUP" ] && [ -f "$LATEST_ALIAS_BACKUP" ]; then
-    echo ""
-    log_info "Found existing backup: $(basename "$LATEST_ALIAS_BACKUP")"
-    
-    RESTORE=false
-    if [ "$FORCE" = false ]; then
-        read -p "Do you want to restore your previous .zsh_aliases from this backup? (y/N) " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            RESTORE=true
-        fi
-    else
-        log_info "Auto-restore skipped in --force mode. Manual restoration available."
-    fi
-
-    if [ "$RESTORE" = true ]; then
-        cp "$LATEST_ALIAS_BACKUP" "$ALIAS_DEST"
-        log_success "Restored $ALIAS_DEST from backup."
-        log_info "Note: You may need to manually add the source line back to .zshrc if you want it active."
-    fi
-fi
-
-if [ -f "$ZSHRC_PATH" ]; then
-    if command -v zsh &> /dev/null; then
-        if ! zsh -n "$ZSHRC_PATH" 2>/dev/null; then
-            log_error "Warning: .zshrc has syntax errors after cleanup!"
-            log_error "Restore from cleanup backup: cp $RC_CLEANUP_BACKUP $ZSHRC_PATH"
-        else
-            log_info ".zshrc syntax check passed."
-        fi
-    fi
 fi
 
 echo ""
-log_success "Uninstallation complete!"
-log_info "Please restart your terminal or run 'source $ZSHRC_PATH' to apply changes."
-log_info "Backups retained: $(basename "$RC_CLEANUP_BACKUP")"
+log "Uninstall complete"
+echo "Run:"
+echo "  source ~/.zshrc"

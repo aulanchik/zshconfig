@@ -58,9 +58,17 @@ The provided `setup.sh` script installs aliases automatically and allows you to 
 Clone the repository:
 
 ```bash
-git clone <repo-url>
-cd zsh-aliases
+git clone https://github.com/aulanchik/zshconfig.git
+cd zshconfig/
 ````
+
+Change the execution policy:
+
+```bash
+chmod +x ./setup.sh
+```
+
+_FYI: This has to be executed for ./uninstall.sh respectfully._
 
 Run the setup script:
 

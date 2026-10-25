@@ -1,6 +1,7 @@
-# Personal ZSH Aliases Configuration
+# Personal zsh config files
 
-Modular zsh aliases for macOS. Each group of aliases is a **profile**: one file in `profiles/`. Enabling a profile symlinks it into `~/.zsh_aliases.d/`, and a small loader block in `~/.zshrc` sources everything in that folder.
+Modular zsh aliases for macOS. Each group of aliases is a **profile**: one file in `profiles/`.
+Enabling a profile symlinks it into `~/.zsh_aliases.d/`, and a small loader block in `~/.zshrc` sources everything in that folder.
 
 ## Layout
 
@@ -35,9 +36,9 @@ Because profiles are symlinks, `git pull` in this repo updates your aliases with
 ./setup.sh --dry-run -p=git         # preview, change nothing
 ```
 
-`general` is always installed. `~/.zshrc` is backed up (`~/.zshrc.backup.<timestamp>`) before the loader is added, and the loader is only added once.
+_Note:_ `general` profile is always installed. `~/.zshrc` is backed up (`~/.zshrc.backup.<timestamp>`) before the loader is added, and the loader is only added once.
 
-## Add a profile
+## Add a profile (How to bring your own aliases)
 
 1. Create `profiles/<name>.zsh`.
 2. Make the first line `# profile: <name> - short description` (shown by `--list-profiles`).

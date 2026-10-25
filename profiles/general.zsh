@@ -1,0 +1,6 @@
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias awake='caffeinate -d'
+alias reload='source ~/.zshrc'
+alias ll='ls -lah'

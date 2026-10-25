@@ -1,0 +1,5 @@
+alias pi='pnpm install'
+alias pr='pnpm run'
+alias pt='pnpm test'
+alias ps-='pnpm start'
+alias px='pnpm dlx'

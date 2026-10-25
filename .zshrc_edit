@@ -1,2 +1,0 @@
-# Load custom aliases
-[ -f "$HOME/.zsh_aliases" ] && source "$HOME/.zsh_aliases"

@@ -1,0 +1,7 @@
+alias bi='brew install'
+alias bic='brew install --cask'
+alias bup='brew update'
+alias bupg='brew upgrade'
+alias blist='brew list'
+alias bclean='brew cleanup --prune=all'
+alias bfull='bup && bupg && bclean'
